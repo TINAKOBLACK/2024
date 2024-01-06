@@ -29,7 +29,7 @@ import frc.robot.Constants.*;
 import static frc.robot.Constants.Drivetrain.*;
 
 public class Drivetrain extends SubsystemBase {
-  public static final double MAX_VOLTAGE = 7.5;
+  public static final double MAX_VOLTAGE = 9;
 
   /**
    * The maximum velocity of the robot in meters per second.
@@ -40,12 +40,6 @@ public class Drivetrain extends SubsystemBase {
           SdsModuleConfigurations.MK4I_L3.getDriveReduction() *
           SdsModuleConfigurations.MK4I_L3.getWheelDiameter() * Math.PI;
 
-  /**
-   * The maximum angular velocity of the robot in radians per second.
-   * <p>
-   * This is a measure of how fast the robot can rotate in place.
-   */
-  // Here we calculate the theoretical maximum angular velocity. You can also replace this with a measured amount.
   public static final double MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND = MAX_VELOCITY_METERS_PER_SECOND /
           Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
 
@@ -81,26 +75,7 @@ public class Drivetrain extends SubsystemBase {
         
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
 
-        // There are 4 methods you can call to create your swerve modules.
-        // The method you use depends on what motors you are using.
-        //
-        // Mk3SwerveModuleHelper.createFalcon500(...)
-        //   Your module has two Falcon 500s on it. One for steering and one for driving.
-        //
-        // Mk3SwerveModuleHelper.createNeo(...)
-        //   Your module has two NEOs on it. One for steering and one for driving.
-        //
-        // Mk3SwerveModuleHelper.createFalcon500Neo(...)
-        //   Your module has a Falcon 500 and a NEO on it. The Falcon 500 is for driving and the NEO is for steering.
-        //
-        // Mk3SwerveModuleHelper.createNeoFalcon500(...)
-        //   Your module has a NEO and a Falcon 500 on it. The NEO is for driving and the Falcon 500 is for steering.
-        //
-        // Similar helpers also exist for Mk4 modules using the Mk4SwerveModuleHelper class.
-
-        // By default we will use Falcon 500s in standard configuration. But if you use a different configuration or motors
-        // you MUST change it. If you do not, your code will crash on startup.
-        // FIXME Setup motor configuration
+   
         m_frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500Neo(
                 // This parameter is optional, but will allow you to see the current state of the module on the dashboard.
                 tab.getLayout("Front Left Module", BuiltInLayouts.kList)
@@ -178,10 +153,6 @@ public class Drivetrain extends SubsystemBase {
             });
       }
 
-  /**
-   * Sets the gyroscope angle to zero. This can be used to set the direction the robot is currently facing to the
-   * 'forwards' direction.
-   */
   public void zeroGyroscope() {
         m_pigeon.setYaw(0.0);
   }

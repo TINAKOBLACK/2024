@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
  */
 public final class Constants {
 
-  public static final PneumaticsModuleType ph = PneumaticsModuleType.REVPH;
+ 
 
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
@@ -43,32 +43,28 @@ public final class Constants {
      * Should be measured from center to center.
      */
     public static final double DRIVETRAIN_TRACKWIDTH_METERS = Units.inchesToMeters(24.75); // Measure and set trackwidth
-    /**
-     * The front-to-back distance between the drivetrain wheels.
-     *
-     * Should be measured from center to center.
-     */
+   
     public static final double DRIVETRAIN_WHEELBASE_METERS = Units.inchesToMeters(24.75); // Measure and set wheelbase
 
-    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 18; // Set front left module drive motor ID
+    public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 10; // Set front left module drive motor ID
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 12; // Set front left module steer motor ID
-    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 20; // Set front left steer encoder ID
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(270.71); // Measure and set front left steer offset
+    public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 22; // Set front left steer encoder ID
+    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(279.2285151576597); // Measure and set front left steer offset
 
-    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 10; // Set front right drive motor ID
+    public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 11; // Set front right drive motor ID
     public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 13; // Set front right steer motor ID
-    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 22; // Set front right steer encoder ID
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(18.72); // Measure and set front right steer offset
+    public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 23; // Set front right steer encoder ID
+    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(298.30078022616647); // Measure and set front right steer offset
 
     public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 14; // Set back left drive motor ID
     public static final int BACK_LEFT_MODULE_STEER_MOTOR = 15; // Set back left steer motor ID
     public static final int BACK_LEFT_MODULE_STEER_ENCODER = 21; // Set back left steer encoder ID
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(315.52); // Measure and set back left steer offset
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(251.98242610561525); // Measure and set back left steer offset
 
-    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 11; // Set back right drive motor ID
+    public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 18; // Set back right drive motor ID
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 16; // Set back right steer motor ID
-    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 23; // Set back right steer encoder ID
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(29.61); // Measure and set back right steer offset
+    public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 20; // Set back right steer encoder ID
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(86.66015611355782); // Measure and set back right steer offset
   }
 
   public static class Intake {

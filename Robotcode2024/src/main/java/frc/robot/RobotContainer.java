@@ -46,7 +46,7 @@ public class RobotContainer {
   
   HashMap<String, Command> eventMap = new HashMap<>();
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+
   public RobotContainer() {
  
     drivetrain.setDefaultCommand(new DriveCommand(
@@ -123,7 +123,7 @@ public class RobotContainer {
     //return new SequentialCommandGroup(followTrajectoryCommandWithEvents(pFiles.rectLine), new PrintCommand("Path finish :)!"));
 
     if (auto.getSelected() == "barrier"){
-      return followTrajectoryCommandWithEvents(pFiles.barrier);
+      return followTrajectoryCommandWithEvents(pFiles.rectLine);
     }
     else if(auto.getSelected() == "mid"){
       //return followTrajectoryCommandWithEvents(pFiles.chargue);

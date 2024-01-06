@@ -16,7 +16,7 @@ public class PathPlannerFiles {
                                 maxAceleration = 3.0;
 
     PathPlannerTrajectory barrier = PathPlanner.loadPath("Barrier", new PathConstraints(maxVelocity, maxAceleration));
-    PathPlannerTrajectory rectLine = PathPlanner.loadPath("RectLine", new PathConstraints(maxVelocity, maxAceleration));
+    PathPlannerTrajectory rectLine = PathPlanner.loadPath("testing", new PathConstraints(maxVelocity, maxAceleration));
     PathPlannerTrajectory courner = PathPlanner.loadPath("Courner", new PathConstraints(maxVelocity, maxAceleration));
     PathPlannerTrajectory chargue = PathPlanner.loadPath("Charge", new PathConstraints(maxVelocity, maxAceleration));
 
