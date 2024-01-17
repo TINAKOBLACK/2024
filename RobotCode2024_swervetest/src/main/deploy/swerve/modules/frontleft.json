@@ -1,11 +1,11 @@
 {
   "drive": {
-    "type": "falcon",
+    "type": "talonfx",
     "id": 4,
     "canbus": null
   },
   "angle": {
-    "type": "neo",
+    "type": "sparkmax",
     "id": 3,
     "canbus": null
   },
