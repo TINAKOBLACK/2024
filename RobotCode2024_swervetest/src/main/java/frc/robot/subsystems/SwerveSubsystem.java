@@ -24,14 +24,15 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import swervelib.SwerveController;
 import swervelib.SwerveDrive;
+import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
 
 import static frc.robot.Constants.Chassis.*;
 
 public class SwerveSubsystem extends SubsystemBase {
-  double maximumSpeed = Units.feetToMeters(4.5);
-  File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(),"swerve");
+  double maximumSpeed = 5.0;
   SwerveDrive swerveDrive;
 
   private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
@@ -46,17 +47,17 @@ public class SwerveSubsystem extends SubsystemBase {
   
 
 
-  public SwerveSubsystem() {
-    AutoBuilderConfig();
-
+  public SwerveSubsystem(File directory) {
     try {
-      swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed);
+      swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed);
     } catch (Exception e) {
-      new PrintCommand("No existe el JSON swerve");
+      throw new RuntimeException(e);
     }
+
+    AutoBuilderConfig();
   }
 
-  public void drive(ChassisSpeeds chassisSpeeds) {
+  public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
     m_chassisSpeeds = chassisSpeeds;
   }
 
@@ -68,7 +69,7 @@ public class SwerveSubsystem extends SubsystemBase {
     return swerveDrive.getPose();
   }
 
-  public void resetPose(Pose2d pose){
+  public void resetOdometry(Pose2d pose){
         swerveDrive.resetOdometry(pose);
   }
 
@@ -77,7 +78,39 @@ public class SwerveSubsystem extends SubsystemBase {
     m_chassisSpeeds = value;
   }
 
-  public ChassisSpeeds getRobotRelativeSpeeds(){
+  public void zeroGyro(){
+    swerveDrive.zeroGyro();
+  }
+
+  public void setMotorBrake(boolean brake){
+    swerveDrive.setMotorIdleMode(brake);
+  }
+
+  public Rotation2d getHeading(){
+    return swerveDrive.getYaw();
+  }
+
+  public ChassisSpeeds getFieldVelocity(){
+    return swerveDrive.getFieldVelocity();
+  }
+
+  public SwerveController getSwerveController(){
+    return swerveDrive.swerveController;
+  }
+
+  public SwerveDriveConfiguration getSwerveDriveConfiguration(){
+    return swerveDrive.swerveDriveConfiguration;
+  }
+
+  public void lock(){
+    swerveDrive.lockPose();
+  }
+
+  public Rotation2d getPitch(){
+    return swerveDrive.getPitch();
+  }
+
+  public ChassisSpeeds getRobotVelocity(){
     return swerveDrive.getRobotVelocity();
   }
   
@@ -85,12 +118,14 @@ public class SwerveSubsystem extends SubsystemBase {
     // Configure AutoBuilder last
         AutoBuilder.configureHolonomic(
                 this::getPose, // Robot pose supplier
-                this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
-                this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                this::drive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+                this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
                         new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                        new PIDConstants(swerveDrive.swerveController.config.headingPIDF.p, 
+                                         swerveDrive.swerveController.config.headingPIDF.i,
+                                         swerveDrive.swerveController.config.headingPIDF.d), // Translation PID constants
                         4.5, // Max module speed, in m/s
                         0.4, // Drive base radius in meters. Distance from robot center to furthest module.
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
