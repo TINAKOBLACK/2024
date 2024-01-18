@@ -4,7 +4,9 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import swervelib.math.Matter;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -15,12 +17,27 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+  public static final double ROBOT_MASS = 70; // kg
+  public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
+  public static final double LOOP_TIME  = 0.020 + 0.110; //s, 20ms + 110ms sprk max velocity lag, maybe 100ms for TalonFX
+
+  public static final double WHEEL_LOCK_TIME = 3; // seconds
+
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
+
+    // Joystick Deadband
+    public static final double LEFT_X_DEADBAND = 0.01;
+    public static final double LEFT_Y_DEADBAND = 0.01;
+    public static final double RIGHT_X_DEADBAND = 0.01;
+    public static final double TURN_CONSTANT = 6;
   }
+
   public static class Chassis {
     public static final double DRIVETRAIN_TRACKWIDTH_METERS = Units.inchesToMeters(24.75); // Measure and set trackwidth
     public static final double DRIVETRAIN_WHEELBASE_METERS = Units.inchesToMeters(24.75); // Measure and set wheelbase
+
+    public static final double MAXSPEED = 4.0; // m/s
   }
 
   public static class Autonomous {

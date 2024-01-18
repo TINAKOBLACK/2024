@@ -1,0 +1,26 @@
+
+>>>>>   CAN IDs greater than 40 can cause undefined behaviour, please use a CAN ID below 40!   <<<<<
+
+Swerve modules
+    Back Left
+        Drive 14
+        Steer 15
+        Encoder 21
+
+    Back Right
+        Drive 18
+        Steer 16
+        Encoder 20
+
+    Front Left
+        Drive 10
+        Steer 12
+        Encoder 22
+
+    Front Right
+        Drive 11
+        Steer 13
+        Encoder 23
+
+Pigeon2.0 30
+    

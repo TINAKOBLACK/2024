@@ -16,53 +16,72 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
+import swervelib.telemetry.SwerveDriveTelemetry;
+import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 import static frc.robot.Constants.Chassis.*;
 
 public class SwerveSubsystem extends SubsystemBase {
-  double maximumSpeed = 5.0;
-  SwerveDrive swerveDrive;
-
-  private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-
-  // Locations for the swerve drive modules relative to the robot center.
-  Translation2d m_frontLeft= new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
-  Translation2d m_frontRight = new Translation2d(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0);
-  Translation2d m_backLeft = new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);
-  Translation2d m_backRight = new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0);
-
-  private final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeft, m_frontRight, m_backLeft, m_backRight);
+  private final SwerveDrive swerveDrive;
+  public double maximumSpeed = MAXSPEED; // m/s
   
-
-
   public SwerveSubsystem(File directory) {
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+
     try {
       swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
 
+    swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
     AutoBuilderConfig();
   }
 
+  /**
+   * The primary method for controlling the drivebase.  Takes a {@link Translation2d} and a rotation rate, and
+   * calculates and commands module states accordingly.  Can use either open-loop or closed-loop velocity control for
+   * the wheel velocities.  Also has field- and robot-relative modes, which affect how the translation vector is used.
+   *
+   * @param translation   {@link Translation2d} that is the commanded linear velocity of the robot, in meters per
+   *                      second. In robot-relative mode, positive x is torwards the bow (front) and positive y is
+   *                      torwards port (left).  In field-relative mode, positive x is away from the alliance wall
+   *                      (field North) and positive y is torwards the left wall when looking through the driver station
+   *                      glass (field West).
+   * @param rotation      Robot angular rate, in radians per second. CCW positive.  Unaffected by field/robot
+   *                      relativity.
+   * @param fieldRelative Drive mode.  True for field-relative, false for robot-relative.
+   */
+  public void drive(Translation2d translation, double rotation, boolean fieldRelative)
+  {
+    swerveDrive.drive(translation,
+                      rotation,
+                      fieldRelative,
+                      false); // Open loop is disabled since it shouldn't be used most of the time.
+  }
+
+  /**
+   * Drive the robot given a chassis field oriented velocity.
+   *
+   * @param velocity Velocity according to the field.
+   */
+  public void driveFieldOriented(ChassisSpeeds velocity)
+  {
+    swerveDrive.driveFieldOriented(velocity);
+  }
+
   public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
-    m_chassisSpeeds = chassisSpeeds;
+    swerveDrive.setChassisSpeeds(chassisSpeeds);
   }
 
   public SwerveDriveKinematics getKinematics(){
-    return m_kinematics;
+    return swerveDrive.kinematics;
   }
 
   public Pose2d getPose(){
@@ -73,11 +92,10 @@ public class SwerveSubsystem extends SubsystemBase {
         swerveDrive.resetOdometry(pose);
   }
 
-  public void driveAutonomous(SwerveModuleState[] swerveModuleState) {
-    ChassisSpeeds value = m_kinematics.toChassisSpeeds(swerveModuleState); 
-    m_chassisSpeeds = value;
-  }
-
+  /**
+   * [EN] Resets the gyro angle to zero and resets odometry to the same position, but facing toward 0.<p>
+   * [ES] Restablece el ángulo del giroscopio a cero y restablece la odometría a la misma posición, pero mirando hacia 0.
+   */
   public void zeroGyro(){
     swerveDrive.zeroGyro();
   }
@@ -86,12 +104,50 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveDrive.setMotorIdleMode(brake);
   }
 
+  /**
+   * Gets the current yaw angle of the robot, as reported by the imu.  CCW positive, not wrapped.
+   *
+   * @return The yaw angle
+   */
   public Rotation2d getHeading(){
     return swerveDrive.getYaw();
   }
 
+  /**
+   * Get the chassis speeds based on controller input of 1 joystick and one angle.
+   *
+   * @param xInput X joystick input for the robot to move in the X direction.
+   * @param yInput Y joystick input for the robot to move in the Y direction.
+   * @param angle  The angle in as a {@link Rotation2d}.
+   * @return {@link ChassisSpeeds} which can be sent to th Swerve Drive.
+   */
+  public ChassisSpeeds getTargetSpeeds(double xInput, double yInput, Rotation2d angle)
+  {
+    xInput = Math.pow(xInput, 3);
+    yInput = Math.pow(yInput, 3);
+    return swerveDrive.swerveController.getTargetSpeeds(xInput,
+                                                        yInput,
+                                                        angle.getRadians(),
+                                                        getHeading().getRadians(),
+                                                        maximumSpeed);
+  }
+  
+  /**
+   * Gets the current field-relative velocity (x, y and omega) of the robot
+   *
+   * @return A ChassisSpeeds object of the current field-relative velocity
+   */
   public ChassisSpeeds getFieldVelocity(){
     return swerveDrive.getFieldVelocity();
+  }
+  
+  /**
+   * Gets the current velocity (x, y and omega) of the robot
+   *
+   * @return A {@link ChassisSpeeds} object of the current velocity
+   */
+  public ChassisSpeeds getRobotVelocity(){
+    return swerveDrive.getRobotVelocity();
   }
 
   public SwerveController getSwerveController(){
@@ -102,6 +158,10 @@ public class SwerveSubsystem extends SubsystemBase {
     return swerveDrive.swerveDriveConfiguration;
   }
 
+  /**
+   * Lock the swerve drive to prevent it from moving. <p>
+   * Point all modules toward the robot center, thus making the robot very difficult to move. Forcing the robot to keep the current pose.
+   */
   public void lock(){
     swerveDrive.lockPose();
   }
@@ -110,43 +170,35 @@ public class SwerveSubsystem extends SubsystemBase {
     return swerveDrive.getPitch();
   }
 
-  public ChassisSpeeds getRobotVelocity(){
-    return swerveDrive.getRobotVelocity();
-  }
   
   public void AutoBuilderConfig(){
-    // Configure AutoBuilder last
+    // Configure AutoBuilder
         AutoBuilder.configureHolonomic(
-                this::getPose, // Robot pose supplier
-                this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
-                this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
-                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                        new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-                        new PIDConstants(swerveDrive.swerveController.config.headingPIDF.p, 
-                                         swerveDrive.swerveController.config.headingPIDF.i,
-                                         swerveDrive.swerveController.config.headingPIDF.d), // Translation PID constants
-                        4.5, // Max module speed, in m/s
-                        0.4, // Drive base radius in meters. Distance from robot center to furthest module.
-                        new ReplanningConfig() // Default path replanning config. See the API for the options here
-                ),
-                () -> {
-                    // Boolean supplier that controls when the path will be mirrored for the red alliance
-                    // This will flip the path being followed to the red side of the field.
-                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+            this::getPose, // Robot pose supplier
+            this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+            this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+            new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                    new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                    new PIDConstants(swerveDrive.swerveController.config.headingPIDF.p, 
+                                      swerveDrive.swerveController.config.headingPIDF.i,
+                                      swerveDrive.swerveController.config.headingPIDF.d), // Translation PID constants
+                    4.5, // Max module speed, in m/s
+                    swerveDrive.swerveDriveConfiguration.getDriveBaseRadiusMeters(), // Drive base radius in meters. Distance from robot center to furthest module.
+                    new ReplanningConfig() // Default path replanning config. See the API for the options here
+            ),
+            () -> {
+                // Boolean supplier that controls when the path will be mirrored for the red alliance
+                // This will flip the path being followed to the red side of the field.
+                // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-                    var alliance = DriverStation.getAlliance();
-                    if (alliance.isPresent()) {
-                        return alliance.get() == DriverStation.Alliance.Red;
-                    }
-                    return false;
-                },
-                this // Reference to this subsystem to set requirements
+                var alliance = DriverStation.getAlliance();
+                return alliance.isPresent() ? alliance.get() == DriverStation.Alliance.Red : false;
+            },
+            this // Reference to this subsystem to set requirements
         );
     }
 
   @Override
-  public void periodic() {
-    swerveDrive.drive(m_chassisSpeeds);
-  }
+  public void periodic() {}
 }
