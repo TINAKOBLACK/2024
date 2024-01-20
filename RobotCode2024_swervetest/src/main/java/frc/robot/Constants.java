@@ -38,6 +38,7 @@ public final class Constants {
     public static final double DRIVETRAIN_WHEELBASE_METERS = Units.inchesToMeters(24.75); // Measure and set wheelbase
 
     public static final double MAXSPEED = 4.0; // m/s
+    public static final double MAXANGULARSPEED = MAXSPEED / Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);; // m/s
   }
 
   public static class Autonomous {

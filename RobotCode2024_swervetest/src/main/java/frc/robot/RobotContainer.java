@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.robot.Constants.Chassis;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.AbsoluteFieldDrive;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -47,7 +48,7 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
-    Command driveFieldOrientedAnglularVelocity = swerveSubsystem.driveCommand(
+    /* Command driveFieldOrientedAnglularVelocity = swerveSubsystem.driveCommand(
         () -> MathUtil.applyDeadband(m_driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
         () -> MathUtil.applyDeadband(m_driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
         () -> m_driverController.getRawAxis(4));
@@ -56,9 +57,36 @@ public class RobotContainer {
     () -> MathUtil.applyDeadband(m_driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
     () -> MathUtil.applyDeadband(m_driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
     () -> m_driverController.getRightX(),
-    () -> m_driverController.getRightY());                                                                       
+    () -> m_driverController.getRightY()); */                                                                       
 
-    swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
+    swerveSubsystem.setDefaultCommand(new AbsoluteFieldDrive(
+            swerveSubsystem,
+            () -> -modifyAxis(m_driverController.getLeftY()) * Chassis.MAXSPEED,
+            () -> -modifyAxis(m_driverController.getLeftX()) * Chassis.MAXSPEED,
+            () -> -modifyAxis(m_driverController.getRightX()) * Chassis.MAXANGULARSPEED
+    ));
+  }
+
+  private static double modifyAxis(double value) {
+    // Deadband
+    value = deadband(value, 0.14);
+
+    // Square the axis
+    value = Math.copySign(value * value, value);
+
+    return value;
+  }
+
+  private static double deadband(double value, double deadband) {
+    if (Math.abs(value) > deadband) {
+      if (value > 0.0) {
+        return (value - deadband) / (1.0 - deadband);
+      } else {
+        return (value + deadband) / (1.0 - deadband);
+      }
+    } else {
+      return 0.0;
+    }
   }
 
   /**
