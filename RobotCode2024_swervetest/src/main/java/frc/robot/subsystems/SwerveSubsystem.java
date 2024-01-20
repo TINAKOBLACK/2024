@@ -58,12 +58,12 @@ public class SwerveSubsystem extends SubsystemBase {
     }
     swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
 
-    for(SwerveModule m : swerveDrive.getModules())
+  /*   for(SwerveModule m : swerveDrive.getModules())
     {
       System.out.println("Module Name: "+m.configuration.name);
       CANSparkMax steeringMotor = (CANSparkMax)m.configuration.angleMotor.getMotor();
       CANSparkMax driveMotor = (CANSparkMax)m.configuration.driveMotor.getMotor();
-    }
+    }*/
 
     AutoBuilderConfig();
   }
