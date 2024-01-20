@@ -48,23 +48,18 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
-    /* Command driveFieldOrientedAnglularVelocity = swerveSubsystem.driveCommand(
+    Command driveFieldOrientedAnglularVelocity = swerveSubsystem.driveCommand(
         () -> MathUtil.applyDeadband(m_driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
         () -> MathUtil.applyDeadband(m_driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-        () -> m_driverController.getRawAxis(4));
+        () -> m_driverController.getRightX());                                                                    
 
-    Command driveFieldOrientedDirectAngle = swerveSubsystem.driveCommand(
-    () -> MathUtil.applyDeadband(m_driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
-    () -> MathUtil.applyDeadband(m_driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-    () -> m_driverController.getRightX(),
-    () -> m_driverController.getRightY()); */                                                                       
-
-    swerveSubsystem.setDefaultCommand(new AbsoluteFieldDrive(
+    /* swerveSubsystem.setDefaultCommand(new AbsoluteFieldDrive(
             swerveSubsystem,
             () -> -modifyAxis(m_driverController.getLeftY()) * Chassis.MAXSPEED,
             () -> -modifyAxis(m_driverController.getLeftX()) * Chassis.MAXSPEED,
             () -> -modifyAxis(m_driverController.getRightX()) * Chassis.MAXANGULARSPEED
-    ));
+    )); */
+    swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
   }
 
   private static double modifyAxis(double value) {

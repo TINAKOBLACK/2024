@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import java.io.File;
 import java.util.function.DoubleSupplier;
 
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -56,14 +57,14 @@ public class SwerveSubsystem extends SubsystemBase {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-    swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
+    swerveDrive.setHeadingCorrection(true); // Heading correction should only be used while controlling the robot via angle.
 
-  /*   for(SwerveModule m : swerveDrive.getModules())
+    for(SwerveModule m : swerveDrive.getModules())
     {
       System.out.println("Module Name: "+m.configuration.name);
       CANSparkMax steeringMotor = (CANSparkMax)m.configuration.angleMotor.getMotor();
-      CANSparkMax driveMotor = (CANSparkMax)m.configuration.driveMotor.getMotor();
-    }*/
+      TalonFX driveMotor = (TalonFX)m.configuration.driveMotor.getMotor();
+    }
 
     AutoBuilderConfig();
   }
@@ -99,7 +100,7 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveDrive.driveFieldOriented(velocity);
   }
   
-/* 
+
   public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier headingX, DoubleSupplier headingY){
     return run(() -> {
       double xInput = Math.pow(translationX.getAsDouble(), 3);
@@ -122,7 +123,7 @@ public class SwerveSubsystem extends SubsystemBase {
                         true,
                         false);
     });
-  } */
+  }
 
   public void setChassisSpeeds(ChassisSpeeds chassisSpeeds) {
     swerveDrive.setChassisSpeeds(chassisSpeeds);
@@ -144,6 +145,7 @@ public class SwerveSubsystem extends SubsystemBase {
    * [EN] Resets the gyro angle to zero and resets odometry to the same position, but facing toward 0.<p>
    * [ES] Restablece el ángulo del giroscopio a cero y restablece la odometría a la misma posición, pero mirando hacia 0.
    */
+
   public void zeroGyro(){
     swerveDrive.zeroGyro();
   }
