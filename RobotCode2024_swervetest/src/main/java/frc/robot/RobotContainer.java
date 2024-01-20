@@ -47,16 +47,18 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
-    AbsoluteFieldDrive closedFieldAbsoluteDrive = new AbsoluteFieldDrive(swerveSubsystem,
-                                                                         () ->
-                                                                             MathUtil.applyDeadband(m_driverController.getLeftY(),
-                                                                                                    OperatorConstants.LEFT_Y_DEADBAND),
-                                                                         () -> MathUtil.applyDeadband(m_driverController.getLeftX(),
-                                                                                                      OperatorConstants.LEFT_X_DEADBAND),
-                                                                         () -> m_driverController.getRawAxis(2)
-                                                                         );
+    Command driveFieldOrientedAnglularVelocity = swerveSubsystem.driveCommand(
+        () -> MathUtil.applyDeadband(m_driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+        () -> MathUtil.applyDeadband(m_driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+        () -> m_driverController.getRawAxis(4));
 
-    swerveSubsystem.setDefaultCommand(closedFieldAbsoluteDrive);
+    Command driveFieldOrientedDirectAngle = swerveSubsystem.driveCommand(
+    () -> MathUtil.applyDeadband(m_driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
+    () -> MathUtil.applyDeadband(m_driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
+    () -> m_driverController.getRightX(),
+    () -> m_driverController.getRightY());                                                                       
+
+    swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
   }
 
   /**

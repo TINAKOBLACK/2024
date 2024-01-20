@@ -75,6 +75,8 @@ public class AbsoluteFieldDrive extends Command
 
     // Make the robot move
     swerve.drive(translation, desiredSpeeds.omegaRadiansPerSecond, true);
+    
+    //swerve.driveFieldOriented(new ChassisSpeeds().fromFieldRelativeSpeeds(vX.getAsDouble(), vY.getAsDouble(), heading.getAsDouble()*3.14, swerve.getHeading()));
 
   }
 

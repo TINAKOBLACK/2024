@@ -1,11 +1,12 @@
 {
   "location": {
     "front": 10,
-    "left": 10
+    "left": -10
   },
-  "absoluteEncoderOffset": 0,
+  "absoluteEncoderInverted": false,
+  "absoluteEncoderOffset": 296.10,
   "drive": {
-    "type": "falcon",
+    "type": "talonfx",
     "id": 11,
     "canbus": "rio"
   },
@@ -15,8 +16,8 @@
     "canbus": "rio"
   },
   "conversionFactor": {
-    "angle": 21.42,
-    "drive": 6.15
+    "angle": 16.8,
+    "drive": 0.05215454470665408
   },
   "encoder": {
     "type": "cancoder",
