@@ -27,15 +27,15 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
 
     // Joystick Deadband
-    public static final double LEFT_X_DEADBAND = 0.1;
-    public static final double LEFT_Y_DEADBAND = 0.1;
-    public static final double RIGHT_X_DEADBAND = 0.1;
+    public static final double LEFT_X_DEADBAND = 0.14;
+    public static final double LEFT_Y_DEADBAND = 0.14;
+    public static final double RIGHT_X_DEADBAND = 0.14;
     public static final double TURN_CONSTANT = 6;
   }
 
   public static class Chassis {
-    public static final double DRIVETRAIN_TRACKWIDTH_METERS = Units.inchesToMeters(24.75); // Measure and set trackwidth
-    public static final double DRIVETRAIN_WHEELBASE_METERS = Units.inchesToMeters(24.75); // Measure and set wheelbase
+    public static final double DRIVETRAIN_TRACKWIDTH_METERS = Units.inchesToMeters(22.75); // Measure and set trackwidth
+    public static final double DRIVETRAIN_WHEELBASE_METERS = Units.inchesToMeters(22.75); // Measure and set wheelbase
 
     public static final double MAXSPEED = 4.0; // m/s
     public static final double MAXANGULARSPEED = MAXSPEED / Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);; // m/s

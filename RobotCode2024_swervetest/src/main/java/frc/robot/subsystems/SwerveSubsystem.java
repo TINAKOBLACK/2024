@@ -57,7 +57,8 @@ public class SwerveSubsystem extends SubsystemBase {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-    swerveDrive.setHeadingCorrection(true); // Heading correction should only be used while controlling the robot via angle.
+
+    swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
 
     for(SwerveModule m : swerveDrive.getModules())
     {
@@ -117,9 +118,9 @@ public class SwerveSubsystem extends SubsystemBase {
   public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier angularRotationX){
     return run(() -> {
       // Make the robot move
-      swerveDrive.drive(new Translation2d(Math.pow(translationX.getAsDouble(), 3) * swerveDrive.getMaximumVelocity(),
-                                          Math.pow(translationY.getAsDouble(), 3) * swerveDrive.getMaximumVelocity()),
-                        Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumAngularVelocity(),
+      swerveDrive.drive(new Translation2d(-Math.pow(translationX.getAsDouble(), 3) * swerveDrive.getMaximumVelocity(),
+                                          -Math.pow(translationY.getAsDouble(), 3) * swerveDrive.getMaximumVelocity()),
+                        -Math.pow(angularRotationX.getAsDouble(), 3) * swerveDrive.getMaximumAngularVelocity(),
                         true,
                         false);
     });
@@ -229,7 +230,7 @@ public class SwerveSubsystem extends SubsystemBase {
             this::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
             new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                    new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+                    new PIDConstants(4.0, 0.0, 0.0), // Rotation PID constants
                     new PIDConstants(swerveDrive.swerveController.config.headingPIDF.p, 
                                       swerveDrive.swerveController.config.headingPIDF.i,
                                       swerveDrive.swerveController.config.headingPIDF.d), // Translation PID constants

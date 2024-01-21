@@ -112,7 +112,7 @@ public class RobotContainer {
     PathPlannerPath path = PathPlannerPath.fromPathFile("Example Path");
     PathPlannerPath pathchoreo = PathPlannerPath.fromChoreoTrajectory("test");
 
-
+    swerveSubsystem.resetOdometry(path.getPreviewStartingHolonomicPose());
     return AutoBuilder.followPath(path);
     //return autoChooser.getSelected();
   }
