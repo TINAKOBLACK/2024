@@ -7,12 +7,10 @@ package frc.robot.subsystems;
 import java.io.File;
 import java.util.function.DoubleSupplier;
 
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
-import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -25,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
-import swervelib.SwerveModule;
 import swervelib.math.SwerveMath;
 import swervelib.parser.SwerveDriveConfiguration;
 import swervelib.parser.SwerveParser;
@@ -60,12 +57,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
     swerveDrive.setHeadingCorrection(false); // Heading correction should only be used while controlling the robot via angle.
 
-    for(SwerveModule m : swerveDrive.getModules())
+    /* for(SwerveModule m : swerveDrive.getModules())
     {
       System.out.println("Module Name: "+m.configuration.name);
       CANSparkMax steeringMotor = (CANSparkMax)m.configuration.angleMotor.getMotor();
       TalonFX driveMotor = (TalonFX)m.configuration.driveMotor.getMotor();
-    }
+    } */
 
     AutoBuilderConfig();
   }
@@ -102,19 +99,36 @@ public class SwerveSubsystem extends SubsystemBase {
   }
   
 
+  /**
+   * Command to drive the robot using translative values and heading as a setpoint.
+   *
+   * @param translationX Translation in the X direction. Cubed for smoother controls.
+   * @param translationY Translation in the Y direction. Cubed for smoother controls.
+   * @param headingX     Heading X to calculate angle of the joystick.
+   * @param headingY     Heading Y to calculate angle of the joystick.
+   * @return Drive command.
+   */
   public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier headingX, DoubleSupplier headingY){
     return run(() -> {
-      double xInput = Math.pow(translationX.getAsDouble(), 3);
-      double yInput = Math.pow(translationX.getAsDouble(), 3);
+      double xInput = -Math.pow(translationX.getAsDouble(), 3);
+      double yInput = -Math.pow(translationX.getAsDouble(), 3);
 
-      driveFieldOriented(swerveDrive.swerveController.getTargetSpeeds(xInput, 
-                                                                      yInput, 
-                                                                      headingX.getAsDouble(), 
-                                                                      headingY.getAsDouble(), 
+      driveFieldOriented(swerveDrive.swerveController.getTargetSpeeds(-xInput, 
+                                                                      -yInput, 
+                                                                      -headingX.getAsDouble(), 
+                                                                      -headingY.getAsDouble(), 
                                                                       swerveDrive.getMaximumAngularVelocity()));
     });
   }
 
+  /**
+   * Command to drive the robot using translative values and heading as angular velocity.
+   *
+   * @param translationX     Translation in the X direction. Cubed for smoother controls.
+   * @param translationY     Translation in the Y direction. Cubed for smoother controls.
+   * @param angularRotationX Angular velocity of the robot to set. Cubed for smoother controls.
+   * @return Drive command.
+   */
   public Command driveCommand(DoubleSupplier translationX, DoubleSupplier translationY, DoubleSupplier angularRotationX){
     return run(() -> {
       // Make the robot move

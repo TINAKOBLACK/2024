@@ -4,15 +4,12 @@
 
 package frc.robot;
 
-import frc.robot.Constants.Chassis;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.AbsoluteFieldDrive;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.SwerveSubsystem;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Map;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -41,6 +38,9 @@ public class RobotContainer {
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
+  /* private final CommandPS5Controller m_driverController =
+      new CommandPS5Controller(OperatorConstants.kDriverControllerPort); */
+
   HashMap<String, Command> eventMap = new HashMap<>();
   private final SendableChooser<Command> autoChooser;
 
@@ -55,7 +55,7 @@ public class RobotContainer {
     Command driveFieldOrientedAnglularVelocity = swerveSubsystem.driveCommand(
         () -> MathUtil.applyDeadband(m_driverController.getLeftY(), OperatorConstants.LEFT_Y_DEADBAND),
         () -> MathUtil.applyDeadband(m_driverController.getLeftX(), OperatorConstants.LEFT_X_DEADBAND),
-        () -> m_driverController.getRawAxis(4));                                                                    
+        () -> m_driverController.getRightX());                                                                   
 
     /* swerveSubsystem.setDefaultCommand(new AbsoluteFieldDrive(
             swerveSubsystem,
@@ -63,29 +63,7 @@ public class RobotContainer {
             () -> -modifyAxis(m_driverController.getLeftX()) * Chassis.MAXSPEED,
             () -> -modifyAxis(m_driverController.getRightX()) * Chassis.MAXANGULARSPEED
     )); */
-    //swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
-  }
-
-  private static double modifyAxis(double value) {
-    // Deadband
-    value = deadband(value, 0.14);
-
-    // Square the axis
-    value = Math.copySign(value * value, value);
-
-    return value;
-  }
-
-  private static double deadband(double value, double deadband) {
-    if (Math.abs(value) > deadband) {
-      if (value > 0.0) {
-        return (value - deadband) / (1.0 - deadband);
-      } else {
-        return (value + deadband) / (1.0 - deadband);
-      }
-    } else {
-      return 0.0;
-    }
+    swerveSubsystem.setDefaultCommand(driveFieldOrientedAnglularVelocity);
   }
 
   /**
@@ -117,7 +95,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     PathPlannerPath path = PathPlannerPath.fromPathFile("Example Path");
-    PathPlannerPath pathchoreo = PathPlannerPath.fromChoreoTrajectory("test");
+    //PathPlannerPath pathchoreo = PathPlannerPath.fromChoreoTrajectory("test");
 
     swerveSubsystem.resetOdometry(path.getPreviewStartingHolonomicPose());
     return AutoBuilder.followPath(path);

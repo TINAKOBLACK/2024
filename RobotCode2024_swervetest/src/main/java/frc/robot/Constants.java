@@ -21,7 +21,7 @@ public final class Constants {
   public static final Matter CHASSIS    = new Matter(new Translation3d(0, 0, Units.inchesToMeters(8)), ROBOT_MASS);
   public static final double LOOP_TIME  = 0.020 + 0.110; //s, 20ms + 110ms sprk max velocity lag, maybe 100ms for TalonFX
 
-  public static final double WHEEL_LOCK_TIME = 3; // seconds
+  public static final double WHEEL_LOCK_TIME = 3; // seconds FIXME mover el tiempo a 10 segundos para compentecia, 3 segundos para pruebas en taller
 
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
@@ -34,10 +34,10 @@ public final class Constants {
   }
 
   public static class Chassis {
-    public static final double DRIVETRAIN_TRACKWIDTH_METERS = Units.inchesToMeters(22.75); // Measure and set trackwidth
-    public static final double DRIVETRAIN_WHEELBASE_METERS = Units.inchesToMeters(22.75); // Measure and set wheelbase
+    public static final double DRIVETRAIN_TRACKWIDTH_METERS = Units.inchesToMeters(22.75); //FIXME medideas del robot de pruebas,
+    public static final double DRIVETRAIN_WHEELBASE_METERS = Units.inchesToMeters(22.75); //FIXME actualizar a las medidas del robot de competencia
 
-    public static final double MAXSPEED = 4.0; // m/s
+    public static final double MAXSPEED = 4.0; // m/s FIXME
     public static final double MAXANGULARSPEED = MAXSPEED / Math.hypot(DRIVETRAIN_TRACKWIDTH_METERS / 2.0, DRIVETRAIN_WHEELBASE_METERS / 2.0);; // m/s
   }
 
