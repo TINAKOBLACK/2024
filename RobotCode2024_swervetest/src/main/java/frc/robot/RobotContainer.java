@@ -32,7 +32,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                                                                                "swerve"));
-  private final Shooter shooter = new Shooter();                                                                             
+  //private final Shooter shooter = new Shooter();                                                                        
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -80,12 +80,10 @@ public class RobotContainer {
     //new Trigger(m_exampleSubsystem::exampleCondition)
     //    .onTrue(new ExampleCommand(m_exampleSubsystem));
 
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    m_driverController.a().onTrue(shooter.shotCommand(0.25)).onFalse(new InstantCommand(shooter::neutral, shooter));
+    /* m_driverController.a().onTrue(shooter.shotCommand(0.25)).onFalse(new InstantCommand(shooter::neutral, shooter));
     m_driverController.b().onTrue(shooter.shotCommand(0.5)).onFalse(new InstantCommand(shooter::neutral, shooter));
     m_driverController.x().onTrue(shooter.shotCommand(0.75)).onFalse(new InstantCommand(shooter::neutral, shooter));
-    m_driverController.y().onTrue(shooter.shotCommand(1.0)).onFalse(new InstantCommand(shooter::neutral, shooter));
+    m_driverController.y().onTrue(shooter.shotCommand(1.0)).onFalse(new InstantCommand(shooter::neutral, shooter)); */
   }
 
   /**
