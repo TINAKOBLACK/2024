@@ -33,7 +33,7 @@ import static frc.robot.Constants.Chassis.*;
 
 public class SwerveSubsystem extends SubsystemBase {
   private final SwerveDrive swerveDrive;
-  public double maximumSpeed = MAXSPEED; // m/s
+  public static double maximumSpeed = MAXSPEED; // m/s
   
   public SwerveSubsystem(File directory) {
     // Angle conversion factor is 360 / (GEAR RATIO * ENCODER RESOLUTION)
